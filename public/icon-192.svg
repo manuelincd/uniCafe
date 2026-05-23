@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Fondo verde oscuro con esquinas redondeadas -->
+  <rect width="192" height="192" rx="44" fill="#1B5E20"/>
+
+  <!-- Hoja encima de la taza -->
+  <path d="M96,76 C84,58 82,40 96,32 C110,40 108,58 96,76Z" fill="#A5D6A7"/>
+  <path d="M96,32 C96,32 96,58 96,76" stroke="#4CAF50" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Vapor (izquierda y derecha) -->
+  <path d="M76,80 Q80,68 76,56" stroke="white" stroke-width="4" fill="none"
+        stroke-linecap="round" opacity="0.5"/>
+  <path d="M116,80 Q120,68 116,56" stroke="white" stroke-width="4" fill="none"
+        stroke-linecap="round" opacity="0.5"/>
+
+  <!-- Cuerpo de la taza (trapecio) -->
+  <path d="M54,88 L62,154 Q62,162 70,162 L122,162 Q130,162 130,154 L138,88 Z" fill="white"/>
+
+  <!-- Asa de la taza -->
+  <path d="M138,106 C158,106 158,142 138,142"
+        stroke="white" stroke-width="11" fill="none" stroke-linecap="round"/>
+
+  <!-- Platillo / saucer -->
+  <ellipse cx="96" cy="164" rx="54" ry="10" fill="white" opacity="0.82"/>
+</svg>
