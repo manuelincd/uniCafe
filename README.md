@@ -1,4 +1,4 @@
-# CaféUni 🍽️
+# CaféUni
 
 CaféUni es una aplicación web progresiva (PWA) desarrollada como 
 proyecto final universitario. Permite a los estudiantes consultar 
