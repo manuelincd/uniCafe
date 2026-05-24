@@ -1,5 +1,7 @@
-// ── Sistema de puntos (por acción, no por peso) ────────────────
-const PUNTOS_BASE_PEDIDO = 10
+// ── Sistema de puntos ──────────────────────────────────────────
+const PUNTOS_BASE_PEDIDO = 10   // fijos por completar cualquier pedido
+const PUNTOS_POR_PESO    = 1    // pts adicionales por cada $10 gastados
+const PESOS_POR_PUNTO    = 10
 const BONUS_ANTICIPADO   = 5
 const BONUS_PRIMER_DIA   = 3
 
@@ -52,19 +54,23 @@ export const TODAS_LAS_INSIGNIAS = [
 ]
 
 /**
- * Calcula puntos por pedido completado (sistema plano, no por monto).
- * @param {Array}   _items            - Ignorado en la nueva lógica (conservado por compatibilidad)
+ * Calcula puntos por pedido completado (híbrido: fijos + por monto).
+ * @param {Array}   items             - Items del carrito
  * @param {boolean} esAnticipado      - Slot elegido 30+ min en el futuro
  * @param {boolean} esPrimerPedidoDia - Primer pedido del día del usuario
- * @returns {{ puntosBase, bonusAnticipado, bonusPrimerDia, total }}
+ * @returns {{ puntosBase, bonusMonto, bonusAnticipado, bonusPrimerDia, total }}
  */
-export function calcularPuntosPedido(_items, esAnticipado = false, esPrimerPedidoDia = false) {
+export function calcularPuntosPedido(items = [], esAnticipado = false, esPrimerPedidoDia = false) {
+  const subtotal = items.reduce(
+    (acc, i) => acc + (i.precio + (i.precioPersonalizaciones ?? 0)) * i.cantidad, 0
+  )
   const puntosBase      = PUNTOS_BASE_PEDIDO
+  const bonusMonto      = Math.floor(subtotal / PESOS_POR_PUNTO) * PUNTOS_POR_PESO
   const bonusAnticipado = esAnticipado      ? BONUS_ANTICIPADO : 0
-  const bonusPrimerDia  = esPrimerPedidoDia ? BONUS_PRIMER_DIA  : 0
-  const total           = puntosBase + bonusAnticipado + bonusPrimerDia
+  const bonusPrimerDia  = esPrimerPedidoDia ? BONUS_PRIMER_DIA : 0
+  const total           = puntosBase + bonusMonto + bonusAnticipado + bonusPrimerDia
 
-  return { puntosBase, bonusAnticipado, bonusPrimerDia, total }
+  return { puntosBase, bonusMonto, bonusAnticipado, bonusPrimerDia, total }
 }
 
 /**

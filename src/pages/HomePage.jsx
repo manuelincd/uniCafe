@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Coffee, ChevronRight, Zap } from 'lucide-react'
@@ -8,7 +7,6 @@ import useCartStore from '@/stores/useCartStore'
 import { CATEGORIAS, getProducto } from '@/data/menu'
 import PointsBanner from '@/components/ui/PointsBanner'
 
-// Primeras 4 en grid 2×2; últimas 3 en grid 3 cols
 const CATS_TOP    = CATEGORIAS.slice(0, 4)
 const CATS_BOTTOM = CATEGORIAS.slice(4)
 
@@ -32,7 +30,7 @@ function saludo() {
 export default function HomePage() {
   const navigate = useNavigate()
   const { nombre } = useUserStore()
-  const pedidos     = useOrderStore((s) => s.pedidos)
+  const pedidos  = useOrderStore((s) => s.pedidos)
   const { agregarItem, limpiarCarrito } = useCartStore()
 
   const ultimoPedido = pedidos.find((p) => p.estado === 'entregado')
@@ -59,10 +57,11 @@ export default function HomePage() {
           <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-md">
             <Coffee size={20} className="text-white" />
           </div>
-          <span className="text-xl font-extrabold text-gray-900 tracking-tight">CaféUni</span>
+          <span className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+            CaféUni
+          </span>
         </div>
 
-        {/* Avatar con iniciales → Perfil */}
         <button
           onClick={() => navigate('/perfil')}
           className="w-9 h-9 bg-primary rounded-full flex items-center justify-center
@@ -75,7 +74,7 @@ export default function HomePage() {
       {/* ── Saludo ─────────────────────────────────── */}
       <div>
         <p className="text-gray-400 text-sm font-medium">{saludo()},</p>
-        <h1 className="text-2xl font-bold text-gray-900 mt-0.5">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">
           {nombre || 'Estudiante'} 👋
         </h1>
       </div>
@@ -85,7 +84,9 @@ export default function HomePage() {
 
       {/* ── Categorías ─────────────────────────────── */}
       <section>
-        <h2 className="text-lg font-bold text-gray-900 mb-3">¿Qué se te antoja hoy?</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+          ¿Qué se te antoja hoy?
+        </h2>
 
         <motion.div
           variants={containerVariants}
@@ -93,36 +94,36 @@ export default function HomePage() {
           animate="show"
           className="space-y-3"
         >
-          {/* Grid 2×2 — primeras 4 categorías */}
           <div className="grid grid-cols-2 gap-3">
             {CATS_TOP.map((cat) => (
               <motion.button
                 key={cat.id}
                 variants={itemVariants}
                 onClick={() => navigate(`/menu/${cat.id}`)}
-                className="bg-white rounded-2xl shadow-card p-4 flex flex-col items-center
-                           gap-2 active:scale-95 transition-transform text-center"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-4
+                           flex flex-col items-center gap-2 active:scale-95
+                           transition-transform text-center"
               >
                 <span className="text-4xl select-none">{cat.emoji}</span>
-                <span className="font-semibold text-gray-800 text-sm leading-tight">
+                <span className="font-semibold text-gray-800 dark:text-gray-100 text-sm leading-tight">
                   {cat.nombre}
                 </span>
               </motion.button>
             ))}
           </div>
 
-          {/* Grid 3 cols — últimas 3 categorías */}
           <div className="grid grid-cols-3 gap-3">
             {CATS_BOTTOM.map((cat) => (
               <motion.button
                 key={cat.id}
                 variants={itemVariants}
                 onClick={() => navigate(`/menu/${cat.id}`)}
-                className="bg-white rounded-2xl shadow-card p-3 flex flex-col items-center
-                           gap-1.5 active:scale-95 transition-transform text-center"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-3
+                           flex flex-col items-center gap-1.5 active:scale-95
+                           transition-transform text-center"
               >
                 <span className="text-3xl select-none">{cat.emoji}</span>
-                <span className="font-semibold text-gray-700 text-xs leading-tight">
+                <span className="font-semibold text-gray-700 dark:text-gray-200 text-xs leading-tight">
                   {cat.nombre}
                 </span>
               </motion.button>
@@ -134,10 +135,12 @@ export default function HomePage() {
       {/* ── Repetir último pedido ──────────────────── */}
       {ultimoPedido && (
         <section>
-          <h2 className="text-lg font-bold text-gray-900 mb-3">Repetir pedido</h2>
-          <div className="bg-white rounded-2xl shadow-card p-4 flex items-center gap-4">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+            Repetir pedido
+          </h2>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-4 flex items-center gap-4">
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-gray-900 text-sm leading-tight line-clamp-1">
+              <p className="font-semibold text-gray-900 dark:text-white text-sm leading-tight line-clamp-1">
                 {ultimoPedido.items.slice(0, 2).map((i) => i.nombre).join(', ')}
                 {ultimoPedido.items.length > 2 && ` +${ultimoPedido.items.length - 2} más`}
               </p>
@@ -172,9 +175,7 @@ export default function HomePage() {
         </div>
         <div className="flex-1">
           <p className="text-white font-bold text-sm">Pide con anticipación</p>
-          <p className="text-primary-light text-xs mt-0.5">
-            30+ minutos antes = +5 puntos extra
-          </p>
+          <p className="text-primary-light text-xs mt-0.5">30+ minutos antes = +5 puntos extra</p>
         </div>
         <ChevronRight size={18} className="text-white/50 flex-shrink-0" />
       </motion.div>

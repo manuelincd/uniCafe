@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Minus, Plus, Check, ChevronLeft } from 'lucide-react'
 import useCartStore from '@/stores/useCartStore'
@@ -12,17 +12,40 @@ const DISP_CONFIG = {
 }
 
 export default function ProductPage() {
-  const { id } = useParams()
-  const navigate = useNavigate()
+  const { id }      = useParams()
+  const navigate    = useNavigate()
+  const { state }   = useLocation()
+  const editUid     = state?.editUid ?? null
+
   const agregarItem = useCartStore((s) => s.agregarItem)
+  const editarItem  = useCartStore((s) => s.editarItem)
+  const itemEnCarrito = useCartStore((s) =>
+    editUid ? s.items.find((i) => i.uid === editUid) : null
+  )
 
   const producto  = getProducto(id)
   const categoria = producto ? getCategoria(producto.categoriaId) : null
 
-  const [cantidad,         setCantidad]        = useState(1)
-  const [personalizaciones, setPersonalizaciones] = useState([])
-  const [favorito,          setFavorito]          = useState(false)
-  const [agregado,          setAgregado]          = useState(false)
+  const [cantidad, setCantidad] = useState(
+    itemEnCarrito?.cantidad ?? 1
+  )
+  const [personalizaciones, setPersonalizaciones] = useState(
+    itemEnCarrito?.personalizaciones ?? []
+  )
+  const [grupoSelecciones, setGrupoSelecciones] = useState(() => {
+    if (!producto?.grupos) return {}
+    return Object.fromEntries(
+      producto.grupos.map((g) => {
+        const found = itemEnCarrito?.personalizaciones?.find((p) =>
+          g.opciones.some((o) => o.id === p.id)
+        )
+        return [g.id, found ? found.id : g.default]
+      })
+    )
+  })
+  const [favorito, setFavorito] = useState(false)
+  const [agregado, setAgregado] = useState(false)
+  const [imgError, setImgError] = useState(false)
 
   if (!producto || !categoria) {
     return (
@@ -33,7 +56,7 @@ export default function ProductPage() {
     )
   }
 
-  const disp   = DISP_CONFIG[producto.disponibilidad] ?? DISP_CONFIG.disponible
+  const disp    = DISP_CONFIG[producto.disponibilidad] ?? DISP_CONFIG.disponible
   const agotado = producto.disponibilidad === 'agotado'
 
   const togglePersonalizacion = (p) =>
@@ -49,7 +72,15 @@ export default function ProductPage() {
 
   const handleAgregar = () => {
     if (agotado) return
-    agregarItem(producto, personalizaciones, cantidad)
+    const grupoOpciones = (producto.grupos ?? []).map((g) =>
+      g.opciones.find((o) => o.id === grupoSelecciones[g.id])
+    ).filter(Boolean)
+    const todasPersonalizaciones = [...personalizaciones, ...grupoOpciones]
+    if (editUid) {
+      editarItem(editUid, todasPersonalizaciones, cantidad)
+    } else {
+      agregarItem(producto, todasPersonalizaciones, cantidad)
+    }
     setAgregado(true)
     setTimeout(() => navigate(-1), 700)
   }
@@ -67,14 +98,16 @@ export default function ProductPage() {
         <button
           onClick={() => navigate(-1)}
           className="w-10 h-10 flex items-center justify-center rounded-xl
-                     bg-white/80 backdrop-blur active:bg-gray-100 transition-colors shadow"
+                     bg-white/80 dark:bg-gray-800/80 backdrop-blur
+                     active:bg-gray-100 dark:active:bg-gray-700 transition-colors shadow"
         >
-          <ChevronLeft size={22} className="text-gray-700" />
+          <ChevronLeft size={22} className="text-gray-700 dark:text-gray-300" />
         </button>
         <button
           onClick={() => setFavorito(!favorito)}
           className="w-10 h-10 flex items-center justify-center rounded-xl
-                     bg-white/80 backdrop-blur active:bg-gray-100 transition-colors shadow"
+                     bg-white/80 dark:bg-gray-800/80 backdrop-blur
+                     active:bg-gray-100 dark:active:bg-gray-700 transition-colors shadow"
         >
           <Heart
             size={22}
@@ -84,18 +117,27 @@ export default function ProductPage() {
       </div>
 
       {/* ── Contenido scrolleable ──────────────────── */}
-      <div className="flex-1 overflow-y-auto pb-36 px-4 space-y-5">
-        {/* Imagen placeholder 4:3 */}
-        <div className="rounded-2xl overflow-hidden" style={{ aspectRatio: '4/3' }}>
-          <div className="w-full h-full bg-primary-light flex items-center justify-center">
-            <span className="text-[88px] select-none">{categoria.emoji}</span>
-          </div>
+      <div className="flex-1 overflow-y-auto px-4 pb-24 space-y-5">
+        {/* Imagen 4:3 */}
+        <div className="rounded-2xl overflow-hidden bg-primary-light" style={{ aspectRatio: '4/3' }}>
+          {producto.imagen && !imgError ? (
+            <img
+              src={producto.imagen}
+              alt={producto.nombre}
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-[88px] select-none">{categoria.emoji}</span>
+            </div>
+          )}
         </div>
 
         {/* Nombre + disponibilidad */}
         <div className="space-y-1">
           <div className="flex items-start justify-between gap-3">
-            <h1 className="text-2xl font-extrabold text-gray-900 leading-tight flex-1">
+            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight flex-1">
               {producto.nombre}
             </h1>
             <span className={`badge flex-shrink-0 mt-1 ${disp.color}`}>
@@ -109,7 +151,9 @@ export default function ProductPage() {
         {/* ── Personalizaciones ──────────────────────── */}
         {producto.personalizaciones.length > 0 && (
           <section>
-            <h2 className="font-bold text-gray-800 text-base mb-3">Personaliza tu orden</h2>
+            <h2 className="font-bold text-gray-800 dark:text-gray-100 text-base mb-3">
+              Personaliza tu orden
+            </h2>
             <div className="space-y-2">
               {producto.personalizaciones.map((p) => {
                 const sel = !!personalizaciones.find((x) => x.id === p.id)
@@ -120,39 +164,26 @@ export default function ProductPage() {
                     className={`w-full flex items-center justify-between px-4 py-3.5
                                 rounded-xl border-2 transition-all active:scale-[0.99]
                                 ${sel
-                                  ? 'border-primary bg-primary-light'
-                                  : 'border-gray-100 bg-white'
+                                  ? 'border-primary bg-primary-light dark:bg-primary/20'
+                                  : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800'
                                 }`}
                   >
-                    <span
-                      className={`font-semibold text-sm ${
-                        sel ? 'text-primary' : 'text-gray-700'
-                      }`}
-                    >
+                    <span className={`font-semibold text-sm ${sel ? 'text-primary' : 'text-gray-700 dark:text-gray-200'}`}>
                       {p.label}
                     </span>
 
                     <div className="flex items-center gap-2.5">
                       {p.costo > 0 && (
-                        <span
-                          className={`text-sm font-bold ${
-                            sel ? 'text-primary' : 'text-accent'
-                          }`}
-                        >
+                        <span className={`text-sm font-bold ${sel ? 'text-primary' : 'text-accent'}`}>
                           +${p.costo}
                         </span>
                       )}
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center
                                     justify-center transition-colors
-                                    ${sel
-                                      ? 'bg-primary border-primary'
-                                      : 'border-gray-300'
-                                    }`}
+                                    ${sel ? 'bg-primary border-primary' : 'border-gray-300 dark:border-gray-600'}`}
                       >
-                        {sel && (
-                          <Check size={11} className="text-white" strokeWidth={3} />
-                        )}
+                        {sel && <Check size={11} className="text-white" strokeWidth={3} />}
                       </div>
                     </div>
                   </button>
@@ -161,78 +192,112 @@ export default function ProductPage() {
             </div>
           </section>
         )}
-      </div>
 
-      {/* ── Footer sticky ──────────────────────────── */}
-      <div
-        className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md
-                   bg-white border-t border-gray-100 px-4 pt-3 pb-safe shadow-bottom"
-      >
-        {/* Selector de cantidad */}
-        <div className="flex items-center justify-between mb-3">
-          <span className="font-semibold text-gray-700 text-sm">Cantidad</span>
-          <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-3 py-1.5">
-            <button
-              onClick={() => setCantidad(Math.max(1, cantidad - 1))}
-              className="w-7 h-7 rounded-full bg-white shadow-sm flex items-center
-                         justify-center active:scale-90 transition-transform"
-            >
-              <Minus size={13} className="text-gray-600" />
-            </button>
-            <span className="text-lg font-bold w-6 text-center tabular-nums">
-              {cantidad}
-            </span>
-            <button
-              onClick={() => setCantidad(cantidad + 1)}
-              className="w-7 h-7 rounded-full bg-primary flex items-center
-                         justify-center active:scale-90 transition-transform"
-            >
-              <Plus size={13} className="text-white" />
-            </button>
+        {/* ── Grupos requeridos (radio) ─────────────── */}
+        {producto.grupos?.map((grupo) => (
+          <section key={grupo.id}>
+            <h2 className="font-bold text-gray-800 dark:text-gray-100 text-base mb-3 flex items-center gap-2">
+              {grupo.label}
+              {grupo.requerido && (
+                <span className="text-[11px] font-semibold text-primary bg-primary-light dark:bg-primary/20 px-2 py-0.5 rounded-full">
+                  Requerido
+                </span>
+              )}
+            </h2>
+            <div className="space-y-2">
+              {grupo.opciones.map((opcion) => {
+                const sel = grupoSelecciones[grupo.id] === opcion.id
+                return (
+                  <button
+                    key={opcion.id}
+                    onClick={() => setGrupoSelecciones((prev) => ({ ...prev, [grupo.id]: opcion.id }))}
+                    className={`w-full flex items-center justify-between px-4 py-3.5
+                                rounded-xl border-2 transition-all active:scale-[0.99]
+                                ${sel
+                                  ? 'border-primary bg-primary-light dark:bg-primary/20'
+                                  : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800'
+                                }`}
+                  >
+                    <span className={`font-semibold text-sm ${sel ? 'text-primary' : 'text-gray-700 dark:text-gray-200'}`}>
+                      {opcion.label}
+                    </span>
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors
+                                     ${sel ? 'bg-primary border-primary' : 'border-gray-300 dark:border-gray-600'}`}>
+                      {sel && <div className="w-2 h-2 rounded-full bg-white" />}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+        ))}
+
+        {/* ── Cantidad + botón ──────────────────────── */}
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-gray-700 dark:text-gray-300 text-sm">Cantidad</span>
+            <div className="flex items-center gap-3 bg-gray-100 dark:bg-gray-700 rounded-xl px-3 py-1.5">
+              <button
+                onClick={() => setCantidad(Math.max(1, cantidad - 1))}
+                className="w-7 h-7 rounded-full bg-white dark:bg-gray-600 shadow-sm flex items-center
+                           justify-center active:scale-90 transition-transform"
+              >
+                <Minus size={13} className="text-gray-600 dark:text-gray-300" />
+              </button>
+              <span className="text-lg font-bold w-6 text-center tabular-nums dark:text-white">
+                {cantidad}
+              </span>
+              <button
+                onClick={() => setCantidad(cantidad + 1)}
+                className="w-7 h-7 rounded-full bg-primary flex items-center
+                           justify-center active:scale-90 transition-transform"
+              >
+                <Plus size={13} className="text-white" />
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Botón naranja */}
-        <button
-          onClick={handleAgregar}
-          disabled={agotado || agregado}
-          className={`w-full flex items-center justify-between px-5 py-4 rounded-xl
-                      font-bold text-base transition-all text-white
-                      ${agregado
-                        ? 'bg-green-500'
-                        : agotado
-                        ? 'bg-gray-300 cursor-not-allowed'
-                        : 'bg-accent active:scale-[0.98]'
-                      }`}
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            {agregado ? (
-              <motion.span
-                key="ok"
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 mx-auto"
-              >
-                <Check size={20} strokeWidth={3} />
-                ¡Agregado al carrito!
-              </motion.span>
-            ) : agotado ? (
-              <motion.span key="agotado" className="mx-auto">
-                Producto agotado
-              </motion.span>
-            ) : (
-              <motion.span
-                key="agregar"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center justify-between w-full"
-              >
-                <span>Agregar al carrito</span>
-                <span className="tabular-nums">${precioTotal}</span>
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </button>
+          <button
+            onClick={handleAgregar}
+            disabled={agotado || agregado}
+            className={`w-full flex items-center justify-between px-5 py-4 rounded-xl
+                        font-bold text-base transition-all text-white
+                        ${agregado
+                          ? 'bg-green-500'
+                          : agotado
+                          ? 'bg-gray-300 cursor-not-allowed'
+                          : 'bg-accent active:scale-[0.98]'
+                        }`}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {agregado ? (
+                <motion.span
+                  key="ok"
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 mx-auto"
+                >
+                  <Check size={20} strokeWidth={3} />
+                  ¡Agregado al carrito!
+                </motion.span>
+              ) : agotado ? (
+                <motion.span key="agotado" className="mx-auto">
+                  Producto agotado
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="agregar"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center justify-between w-full"
+                >
+                  <span>{editUid ? 'Guardar cambios' : 'Agregar al carrito'}</span>
+                  <span className="tabular-nums">${precioTotal}</span>
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+        </div>
       </div>
     </motion.div>
   )

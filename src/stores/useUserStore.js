@@ -40,6 +40,15 @@ const useUserStore = create(
         set({ puntos: nuevos, nivel: nuevoNivel })
       },
 
+      quitarPuntos: (cantidad) => {
+        const nuevos = Math.max(0, get().puntos - cantidad)
+        const nuevoNivel = NIVELES.reduce(
+          (acc, n, i) => (nuevos >= n.min ? i : acc),
+          0
+        )
+        set({ puntos: nuevos, nivel: nuevoNivel })
+      },
+
       registrarPedido: ({ esAnticipado = false } = {}) => {
         const hoy = new Date().toDateString()
         const { ultimoPedidoFecha, rachaActual, totalPedidos, pedidosAnticipados } = get()

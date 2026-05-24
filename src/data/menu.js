@@ -73,6 +73,7 @@ export const PRODUCTOS = [
     descripcion: 'Huevos al gusto, frijoles, tortillas y café o jugo',
     precio: 65,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/desayuno-mexicano.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.sinFrijoles,
       P.extraQueso, P.sinCrema, P.conCrema
@@ -85,6 +86,7 @@ export const PRODUCTOS = [
     descripcion: 'Huevos al gusto acompañados de frijoles y tortillas',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/huevos.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.sinFrijoles,
       P.extraQueso, P.extraSalsa, P.sinSalsa
@@ -97,6 +99,7 @@ export const PRODUCTOS = [
     descripcion: 'Tres hotcakes esponjosos con miel y mantequilla',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/hotcakes.jpg',
     personalizaciones: [
       P.sinAzucar, P.extraProteina
     ]
@@ -108,6 +111,7 @@ export const PRODUCTOS = [
     descripcion: 'Totopos bañados en salsa roja o verde, crema y queso',
     precio: 55,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/chilaquiles.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.sinCrema, P.conCrema,
       P.extraQueso, P.extraSalsa, P.sinSalsa, P.extraProteina
@@ -120,6 +124,7 @@ export const PRODUCTOS = [
     descripcion: 'Tortilla de harina con jamón y queso gratinado',
     precio: 50,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/sincronizada.jpg',
     personalizaciones: [
       P.sinJamon, P.extraQueso, P.sinSalsa
     ]
@@ -128,11 +133,12 @@ export const PRODUCTOS = [
     id: 'bd-06',
     categoriaId: 'buenos-dias',
     nombre: 'Molletes con mantequilla',
-    descripcion: 'Bolillo abierto con frijoles y queso gratinado',
+    descripcion: 'Bolillo abierto con mantequilla y azúcar',
     precio: 30,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/molleteazucar.jpg',
     personalizaciones: [
-      P.sinFrijoles, P.extraQueso, P.sinSalsa, P.sinCebolla
+      P.sinAzucar
     ]
   },
 
@@ -144,6 +150,7 @@ export const PRODUCTOS = [
     descripcion: 'Tortillas bañadas en salsa verde con pollo, crema y queso',
     precio: 55,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/enchiladas.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.sinCrema, P.conCrema,
       P.extraQueso, P.extraSalsa, P.sinSalsa
@@ -156,6 +163,7 @@ export const PRODUCTOS = [
     descripcion: 'Taquitos de cerdo adobado con cebolla y cilantro',
     precio: 50,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/tacos.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.sinSalsa, P.extraSalsa
     ]
@@ -167,6 +175,7 @@ export const PRODUCTOS = [
     descripcion: 'Tacos de frijoles con queso y rajas, estilo Tuxpan',
     precio: 50,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/tacos.jpg',
     personalizaciones: [
       P.sinChile, P.sinFrijoles, P.extraQueso, P.sinSalsa, P.extraSalsa
     ]
@@ -178,6 +187,7 @@ export const PRODUCTOS = [
     descripcion: 'Tortillas bañadas en salsa de frijol con queso y crema',
     precio: 50,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/comida-mexicana.jpg',
     personalizaciones: [
       P.sinChile, P.sinCrema, P.conCrema, P.extraQueso, P.sinSalsa
     ]
@@ -189,6 +199,7 @@ export const PRODUCTOS = [
     descripcion: 'Tortillas enrolladas con pollo, acompañadas de guacamole y crema',
     precio: 55,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/flautas.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.sinCrema, P.conCrema,
       P.extraQueso, P.extraAguacate, P.sinSalsa
@@ -201,6 +212,7 @@ export const PRODUCTOS = [
     descripcion: 'Masa frita con frijoles, lechuga, queso y salsa',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/sopitos.jpg',
     personalizaciones: [
       P.sinChile, P.sinFrijoles, P.extraQueso, P.sinSalsa, P.extraSalsa
     ]
@@ -214,6 +226,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan telera con lomo de cerdo, aguacate, jitomate y chile',
     precio: 50,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/torta.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.extraAguacate, P.sinSalsa,
       P.extraQueso, P.sinCrema, P.conCrema
@@ -226,6 +239,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan telera con jamón, queso, piña y chile',
     precio: 50,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/torta.jpg',
     personalizaciones: [
       P.sinPina, P.sinChile, P.extraQueso, P.sinSalsa
     ]
@@ -237,6 +251,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan telera cargada con milanesa, jamón, salchicha, queso y aguacate',
     precio: 55,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/torta.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.extraAguacate, P.extraQueso,
       P.sinSalsa, P.sinCrema, P.conCrema
@@ -249,6 +264,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan telera con queso panela asado, aguacate y chile',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/torta.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.extraAguacate, P.sinSalsa, P.extraQueso
     ]
@@ -260,6 +276,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan telera con jamón, queso, aguacate y chile',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/torta.jpg',
     personalizaciones: [
       P.sinJamon, P.sinCebolla, P.sinChile, P.extraAguacate,
       P.extraQueso, P.sinSalsa, P.conCrema
@@ -272,6 +289,7 @@ export const PRODUCTOS = [
     descripcion: 'Medio bolillo con frijoles y queso',
     precio: 40,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/molletes.jpg',
     personalizaciones: [
       P.sinFrijoles, P.extraQueso, P.sinChile
     ]
@@ -283,6 +301,7 @@ export const PRODUCTOS = [
     descripcion: 'Medio bolillo con frijoles, queso y milanesa',
     precio: 50,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/molletes.jpg',
     personalizaciones: [
       P.sinFrijoles, P.extraQueso, P.sinChile, P.sinCebolla
     ]
@@ -294,6 +313,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan de caja tostado con lomo, lechuga, jitomate y mayonesa',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/torta.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.extraQueso, P.sinSalsa, P.conCrema
     ]
@@ -305,6 +325,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan de caja tostado con pollo, lechuga, jitomate y mayonesa',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/torta.jpg',
     personalizaciones: [
       P.sinCebolla, P.extraQueso, P.sinSalsa, P.conCrema, P.extraProteina
     ]
@@ -316,6 +337,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan de caja tostado con queso panela, lechuga y jitomate',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/torta.jpg',
     personalizaciones: [
       P.sinCebolla, P.extraQueso, P.sinSalsa, P.sinChile
     ]
@@ -327,6 +349,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan de caja tostado con jamón, queso, lechuga y jitomate',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/torta.jpg',
     personalizaciones: [
       P.sinJamon, P.extraQueso, P.sinSalsa, P.sinCebolla, P.conCrema
     ]
@@ -340,6 +363,7 @@ export const PRODUCTOS = [
     descripcion: 'Plato del día con arroz, frijoles y tortillas',
     precio: 55,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/comida-mexicana.jpg',
     personalizaciones: [
       P.sinChile, P.sinFrijoles, P.extraSalsa, P.sinSalsa, P.sinCrema, P.conCrema
     ]
@@ -351,8 +375,23 @@ export const PRODUCTOS = [
     descripcion: 'Plato del día completo con agua fresca incluida',
     precio: 65,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/comida-mexicana.jpg',
     personalizaciones: [
       P.sinChile, P.sinFrijoles, P.extraSalsa, P.sinSalsa, P.sinCrema, P.conCrema
+    ],
+    grupos: [
+      {
+        id: 'sabor-agua',
+        label: 'Sabor del agua',
+        requerido: true,
+        default: 'agua-jamaica',
+        opciones: [
+          { id: 'agua-jamaica',  label: 'Jamaica'  },
+          { id: 'agua-horchata', label: 'Horchata' },
+          { id: 'agua-limon',    label: 'Limón'    },
+          { id: 'agua-naranja',  label: 'Naranja'  },
+        ]
+      }
     ]
   },
   {
@@ -362,6 +401,7 @@ export const PRODUCTOS = [
     descripcion: 'Ensalada fresca con pollo a la plancha, verduras y aderezo',
     precio: 60,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/ensalada-pollo.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.extraProteina, P.sinSalsa
     ]
@@ -375,6 +415,7 @@ export const PRODUCTOS = [
     descripcion: 'Salchicha en pan con cátsup, mostaza y mayonesa',
     precio: 35,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/hotdog.jpg',
     personalizaciones: [
       P.sinKetchup, P.sinMostaza, P.sinCebolla, P.extraQueso
     ]
@@ -386,6 +427,7 @@ export const PRODUCTOS = [
     descripcion: 'Carne de res con lechuga, jitomate, queso y mayonesa',
     precio: 50,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/hamburguesa.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.extraQueso, P.sinKetchup,
       P.sinMostaza, P.extraProteina
@@ -398,6 +440,7 @@ export const PRODUCTOS = [
     descripcion: 'Hamburguesa sencilla acompañada de papas a la francesa',
     precio: 70,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/hamburguesa-papas.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.extraQueso, P.sinKetchup,
       P.sinMostaza, P.extraProteina, P.papasExtra
@@ -410,6 +453,7 @@ export const PRODUCTOS = [
     descripcion: 'Tortilla de harina con carne, frijoles, queso y salsa',
     precio: 45,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/burrito.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.sinFrijoles, P.extraQueso,
       P.extraSalsa, P.sinSalsa
@@ -422,6 +466,7 @@ export const PRODUCTOS = [
     descripcion: 'Papas doradas y crujientes con sal y tu salsa favorita',
     precio: 35,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/papas.jpg',
     personalizaciones: [
       P.sinKetchup, P.extraSalsa, P.extraQueso
     ]
@@ -435,6 +480,7 @@ export const PRODUCTOS = [
     descripcion: 'Fruta fresca de temporada con chile y limón',
     precio: 30,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/fruta.jpg',
     personalizaciones: [
       P.sinChile
     ]
@@ -446,6 +492,7 @@ export const PRODUCTOS = [
     descripcion: 'Gelatina del día con crema chantilly',
     precio: 20,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/gelatina.jpg',
     personalizaciones: [
       P.sinCrema
     ]
@@ -457,6 +504,7 @@ export const PRODUCTOS = [
     descripcion: 'Crepas con cajeta, crema y nuez',
     precio: 40,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/crepas.jpg',
     personalizaciones: [
       P.sinCrema, P.sinAzucar
     ]
@@ -470,6 +518,7 @@ export const PRODUCTOS = [
     descripcion: 'Agua fresca del día (Jamaica, Horchata, Tamarindo o Limón)',
     precio: 20,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/agua-fresca.jpg',
     personalizaciones: [
       P.sinAzucar
     ]
@@ -481,6 +530,7 @@ export const PRODUCTOS = [
     descripcion: 'Jugo natural de naranja recién exprimido',
     precio: 30,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/jugo-naranja.jpg',
     personalizaciones: []
   },
   {
@@ -490,6 +540,7 @@ export const PRODUCTOS = [
     descripcion: 'Mezcla de espinaca, nopal, pepino, piña y limón',
     precio: 30,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/jugo-verde.jpg',
     personalizaciones: [
       P.sinAzucar
     ]
@@ -501,6 +552,7 @@ export const PRODUCTOS = [
     descripcion: 'Licuado con frutas de temporada, leche y miel',
     precio: 35,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/licuado.jpg',
     personalizaciones: [
       P.sinAzucar, P.conLeche, P.extraProteina
     ]
@@ -512,6 +564,7 @@ export const PRODUCTOS = [
     descripcion: 'Leche con chocolate, frío o caliente',
     precio: 25,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/chocomilk.jpg',
     personalizaciones: [
       P.sinAzucar, P.conLeche
     ]
@@ -523,6 +576,7 @@ export const PRODUCTOS = [
     descripcion: 'Vaso de leche entera, frío o caliente',
     precio: 20,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/leche.jpg',
     personalizaciones: [
       P.sinAzucar
     ]
@@ -534,6 +588,7 @@ export const PRODUCTOS = [
     descripcion: 'Café de olla o americano, con o sin leche',
     precio: 20,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/cafe.jpg',
     personalizaciones: [
       P.sinAzucar, P.conLeche
     ]
@@ -545,6 +600,7 @@ export const PRODUCTOS = [
     descripcion: 'Té de manzanilla, limón o hierbabuena',
     precio: 15,
     disponibilidad: 'disponible',
+    imagen: '/images/menu/te.jpg',
     personalizaciones: [
       P.sinAzucar, P.conLeche
     ]

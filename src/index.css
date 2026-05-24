@@ -9,9 +9,18 @@
     background-color: #FAFAFA;
   }
 
+  html.dark {
+    background-color: #111827;
+  }
+
   body {
     @apply text-gray-800 bg-background;
     overscroll-behavior: none;
+  }
+
+  .dark body {
+    background-color: #111827;
+    color: #f3f4f6;
   }
 
   /* Safe area para dispositivos con notch */
@@ -49,6 +58,10 @@
 }
 
 @layer utilities {
+  /* Accesibilidad: tamaño de texto */
+  .text-size-grande      { font-size: 112%; }
+  .text-size-extragrande { font-size: 125%; }
+
   .pb-safe {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }

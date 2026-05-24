@@ -43,17 +43,17 @@ export default function MenuPage() {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.22 }}
-      className="min-h-screen pb-40"
+      className="min-h-screen pb-6"
     >
-      {/* ── Header ─────────────────────────────────── */}
       <PageHeader
         title={`${cat.emoji} ${cat.nombre}`}
         subtitle={cat.descripcion}
         onBack={() => navigate(-1)}
       />
 
-      {/* ── Tabs de categorías con scroll ──────────── */}
-      <div className="flex gap-2 px-4 overflow-x-auto scrollbar-hide py-2 border-b border-gray-100">
+      {/* ── Tabs de categorías ─────────────────────── */}
+      <div className="flex gap-2 px-4 overflow-x-auto scrollbar-hide py-2
+                      border-b border-gray-100 dark:border-gray-800">
         {CATEGORIAS.map((c) => (
           <Link
             key={c.id}
@@ -63,7 +63,7 @@ export default function MenuPage() {
                         text-sm font-semibold transition-all whitespace-nowrap
                         ${c.id === categoria
                           ? 'bg-primary text-white shadow-md'
-                          : 'bg-gray-100 text-gray-600 active:bg-gray-200'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 active:bg-gray-200'
                         }`}
           >
             <span className="text-base">{c.emoji}</span>
@@ -72,7 +72,17 @@ export default function MenuPage() {
         ))}
       </div>
 
-      {/* ── Grid de productos 2 columnas ───────────── */}
+      {/* ── Banner de puntos anticipados ───────────── */}
+      <div className="px-4 pt-3">
+        <div className="bg-primary-dark rounded-xl px-4 py-2.5 flex items-center gap-2">
+          <Zap size={15} className="text-accent flex-shrink-0" />
+          <p className="text-white text-xs font-semibold">
+            Pide con 30 min de anticipación y gana +5 puntos extra
+          </p>
+        </div>
+      </div>
+
+      {/* ── Grid de productos ──────────────────────── */}
       <div className="px-4 pt-4 grid grid-cols-2 gap-4">
         {productos.map((prod, i) => (
           <motion.div
@@ -85,22 +95,6 @@ export default function MenuPage() {
             <ProductCard producto={prod} />
           </motion.div>
         ))}
-      </div>
-
-      {/* ── Banner sticky inferior — puntos anticipados ─ */}
-      <div
-        className="fixed bottom-16 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-20
-                   pointer-events-none"
-      >
-        <div
-          className="bg-primary-dark/90 backdrop-blur-sm rounded-xl px-4 py-2.5
-                     flex items-center gap-2 shadow-lg"
-        >
-          <Zap size={15} className="text-accent flex-shrink-0" />
-          <p className="text-white text-xs font-semibold">
-            Pide con 30 min de anticipación y gana +5 puntos extra
-          </p>
-        </div>
       </div>
     </motion.div>
   )

@@ -41,6 +41,24 @@ const useCartStore = create(
         }
       },
 
+      editarItem: (uid, personalizaciones, cantidad) => {
+        set({
+          items: get().items.map((i) => {
+            if (i.uid !== uid) return i
+            const llave = JSON.stringify({ id: i.productoId, personalizaciones })
+            return {
+              ...i,
+              _llave: llave,
+              personalizaciones,
+              cantidad,
+              precioPersonalizaciones: personalizaciones.reduce(
+                (acc, p) => acc + (p.costo ?? 0), 0
+              )
+            }
+          })
+        })
+      },
+
       quitarItem: (uid) => {
         set({ items: get().items.filter((i) => i.uid !== uid) })
       },

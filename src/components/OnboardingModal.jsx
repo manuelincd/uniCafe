@@ -37,7 +37,7 @@ export default function OnboardingModal({ onClose }) {
     {
       icono: <Star size={48} className="text-accent" />,
       titulo: 'Acumula puntos',
-      texto: 'Cada peso gastado suma puntos. Desbloquea insignias, sube de nivel y conviértete en Leyenda de la cafetería.'
+      texto: 'Cada pedido suma puntos. Desbloquea insignias, sube de nivel y conviértete en Leyenda de la cafetería.'
     }
   ]
 
@@ -53,29 +53,31 @@ export default function OnboardingModal({ onClose }) {
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-        className="w-full max-w-md bg-white rounded-t-3xl px-6 pt-8 pb-safe"
+        className="w-full max-w-md bg-white dark:bg-gray-900 rounded-t-3xl px-6 pt-8 pb-safe"
       >
         {/* Handle */}
-        <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-6" />
+        <div className="w-10 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-6" />
 
         {paso < pasos.length ? (
           <>
-            {/* Paso informativo */}
             <div className="flex flex-col items-center text-center gap-4 min-h-48">
               <div className="p-4 bg-primary-light rounded-2xl">
                 {pasos[paso].icono}
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">{pasos[paso].titulo}</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {pasos[paso].titulo}
+              </h2>
               <p className="text-gray-500 leading-relaxed">{pasos[paso].texto}</p>
             </div>
 
-            {/* Dots */}
             <div className="flex justify-center gap-2 my-6">
               {pasos.map((_, i) => (
                 <span
                   key={i}
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    i === paso ? 'w-6 bg-primary' : 'w-2 bg-gray-200'
+                    i === paso
+                      ? 'w-6 bg-primary'
+                      : 'w-2 bg-gray-200 dark:bg-gray-700'
                   }`}
                 />
               ))}
@@ -91,10 +93,11 @@ export default function OnboardingModal({ onClose }) {
           </>
         ) : (
           <>
-            {/* Paso nombre */}
             <div className="flex flex-col items-center text-center gap-4 min-h-48">
               <div className="text-5xl">☕</div>
-              <h2 className="text-2xl font-bold text-gray-900">¿Cómo te llamas?</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                ¿Cómo te llamas?
+              </h2>
               <p className="text-gray-500">Con tu nombre personalizamos tu experiencia</p>
             </div>
 
@@ -112,9 +115,11 @@ export default function OnboardingModal({ onClose }) {
                 autoFocus
                 className={`w-full border-2 rounded-xl px-4 py-3 text-lg font-medium
                            outline-none transition-colors
+                           bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                           placeholder:text-gray-300
                            ${error
                              ? 'border-red-400 focus:border-red-500'
-                             : 'border-gray-200 focus:border-primary'
+                             : 'border-gray-200 dark:border-gray-600 focus:border-primary'
                            }`}
               />
               {error && <p className="text-red-500 text-sm mt-1.5">{error}</p>}

@@ -9,8 +9,8 @@ export default function CartFAB() {
   const items = useCartStore((s) => s.items)
   const totalItems = items.reduce((acc, i) => acc + i.cantidad, 0)
 
-  // Oculto en /carrito y cuando el carrito está vacío
-  const visible = pathname !== '/carrito' && totalItems > 0
+  const RUTAS_OCULTAS = ['/carrito', '/horario', '/confirmar']
+  const visible = !RUTAS_OCULTAS.includes(pathname) && totalItems > 0
 
   return (
     <AnimatePresence>
@@ -23,7 +23,7 @@ export default function CartFAB() {
           whileTap={{ scale: 0.88 }}
           transition={{ type: 'spring', stiffness: 400, damping: 22 }}
           onClick={() => navigate('/carrito')}
-          className="fixed right-4 bottom-[84px] z-30 w-14 h-14 bg-accent rounded-full
+          className="fixed right-4 bottom-24 z-30 w-14 h-14 bg-accent rounded-full
                      shadow-lg flex items-center justify-center"
           aria-label="Ver carrito"
         >

@@ -1,21 +1,23 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { getCategoria } from '@/data/menu'
 import useCartStore from '@/stores/useCartStore'
 
 const DISP_CONFIG = {
-  disponible: { label: 'Disponible',    color: 'bg-green-100 text-green-700'  },
-  poco:       { label: 'Pocas piezas',  color: 'bg-yellow-100 text-yellow-700' },
-  agotado:    { label: 'Agotado',       color: 'bg-red-100 text-red-700'       },
+  disponible: { label: 'Disponible',   color: 'bg-green-100 text-green-700'   },
+  poco:       { label: 'Pocas piezas', color: 'bg-yellow-100 text-yellow-700' },
+  agotado:    { label: 'Agotado',      color: 'bg-red-100 text-red-700'       },
 }
 
 export default function ProductCard({ producto, onAdd }) {
-  const navigate = useNavigate()
+  const navigate    = useNavigate()
   const agregarItem = useCartStore((s) => s.agregarItem)
+  const [imgError, setImgError] = useState(false)
 
   const categoria = getCategoria(producto.categoriaId)
-  const disp = DISP_CONFIG[producto.disponibilidad] ?? DISP_CONFIG.disponible
-  const agotado = producto.disponibilidad === 'agotado'
+  const disp      = DISP_CONFIG[producto.disponibilidad] ?? DISP_CONFIG.disponible
+  const agotado   = producto.disponibilidad === 'agotado'
 
   const handleAdd = (e) => {
     e.stopPropagation()
@@ -26,25 +28,30 @@ export default function ProductCard({ producto, onAdd }) {
   return (
     <div
       onClick={() => navigate(`/producto/${producto.id}`)}
-      className="bg-white rounded-2xl shadow-card overflow-hidden cursor-pointer
-                 active:scale-[0.97] transition-transform"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-card overflow-hidden
+                 cursor-pointer active:scale-[0.97] transition-transform"
     >
-      {/* Imagen placeholder verde con emoji de categoría */}
-      <div
-        className="bg-primary-light flex items-center justify-center"
-        style={{ aspectRatio: '4/3' }}
-      >
-        <span className="text-5xl select-none">{categoria?.emoji ?? '🍽️'}</span>
+      <div className="overflow-hidden bg-primary-light" style={{ aspectRatio: '4/3' }}>
+        {producto.imagen && !imgError ? (
+          <img
+            src={producto.imagen}
+            alt={producto.nombre}
+            className="w-full h-full object-cover"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-5xl select-none">{categoria?.emoji ?? '🍽️'}</span>
+          </div>
+        )}
       </div>
 
-      {/* Contenido */}
       <div className="p-3 space-y-1.5">
-        {/* Badge disponibilidad */}
         <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${disp.color}`}>
           {disp.label}
         </span>
 
-        <h3 className="font-bold text-gray-900 text-sm leading-snug line-clamp-1">
+        <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-1">
           {producto.nombre}
         </h3>
 

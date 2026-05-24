@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ClipboardList, XCircle, CheckCircle, Clock, Package, RotateCcw } from 'lucide-react'
+import { ClipboardList, XCircle, CheckCircle, Clock, Package, RotateCcw, MapPin } from 'lucide-react'
 import useOrderStore from '@/stores/useOrderStore'
 import useCartStore from '@/stores/useCartStore'
+import useUserStore from '@/stores/useUserStore'
 import { getProducto } from '@/data/menu'
 import PageHeader from '@/components/ui/PageHeader'
+import SeguimientoSheet from '@/components/SeguimientoSheet'
 
 const ESTADO = {
   pendiente: { label: 'En preparación', Icono: Clock,        color: 'bg-yellow-100 text-yellow-700' },
@@ -14,7 +16,7 @@ const ESTADO = {
   cancelado: { label: 'Cancelado',      Icono: XCircle,      color: 'bg-red-100 text-red-700'       },
 }
 
-function PedidoCard({ pedido, esActivo, onCancelar, onRepetir }) {
+function PedidoCard({ pedido, esActivo, onCancelar, onRepetir, onSeguimiento }) {
   const [confirmando, setConfirmando] = useState(false)
   const conf  = ESTADO[pedido.estado] ?? ESTADO.pendiente
   const Icono = conf.Icono
@@ -31,12 +33,11 @@ function PedidoCard({ pedido, esActivo, onCancelar, onRepetir }) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-      className="bg-white rounded-2xl shadow-card p-4 space-y-3"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-4 space-y-3"
     >
-      {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="font-bold text-gray-900 text-sm">{pedido.id}</p>
+          <p className="font-bold text-gray-900 dark:text-white text-sm">{pedido.id}</p>
           <p className="text-gray-400 text-xs mt-0.5">
             {fechaStr} · Recolección {pedido.slot}
           </p>
@@ -47,10 +48,9 @@ function PedidoCard({ pedido, esActivo, onCancelar, onRepetir }) {
         </span>
       </div>
 
-      {/* Items resumidos */}
       <div className="space-y-0.5">
         {pedido.items.slice(0, 3).map((item) => (
-          <p key={item.uid} className="text-sm text-gray-700">
+          <p key={item.uid} className="text-sm text-gray-700 dark:text-gray-300">
             <span className="font-semibold">{item.cantidad}×</span> {item.nombre}
             {item.personalizaciones?.length > 0 && (
               <span className="text-gray-400 text-xs">
@@ -64,49 +64,70 @@ function PedidoCard({ pedido, esActivo, onCancelar, onRepetir }) {
         )}
       </div>
 
-      {/* Footer: precio + acciones */}
-      <div className="flex items-center justify-between border-t border-gray-100 pt-2.5">
+      <div className="border-t border-gray-100 dark:border-gray-700 pt-2.5 space-y-2.5">
+        {/* Precio + puntos */}
         <div className="flex items-baseline gap-2">
           <span className="font-extrabold text-primary tabular-nums">${pedido.total}</span>
           {pedido.puntosGanados > 0 && (
-            <span className="text-xs text-accent font-semibold">+{pedido.puntosGanados} pts</span>
+            pedido.estado === 'cancelado' ? (
+              <span className="text-xs text-gray-400 font-semibold line-through">
+                +{pedido.puntosGanados} pts
+              </span>
+            ) : (
+              <span className="text-xs text-accent font-semibold">+{pedido.puntosGanados} pts</span>
+            )
           )}
         </div>
 
-        {esActivo ? (
-          confirmando ? (
-            <div className="flex items-center gap-2">
-              <p className="text-xs text-red-500 font-semibold">¿Seguro?</p>
+        {/* Acciones */}
+        <div className="flex items-center gap-2">
+          {/* Seguimiento — siempre visible */}
+          <button
+            onClick={() => onSeguimiento(pedido)}
+            className="flex items-center gap-1.5 text-xs text-primary font-bold
+                       bg-primary-light dark:bg-primary/20 px-3 py-1.5 rounded-lg
+                       active:scale-95 transition-transform flex-1 justify-center"
+          >
+            <MapPin size={13} /> Ver seguimiento
+          </button>
+
+          {/* Cancelar / Repetir */}
+          {esActivo ? (
+            confirmando ? (
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs text-red-500 font-semibold">¿Seguro?</p>
+                <button
+                  onClick={() => { onCancelar(pedido); setConfirmando(false) }}
+                  className="text-xs text-white bg-red-500 px-2.5 py-1.5 rounded-lg font-bold"
+                >
+                  Sí
+                </button>
+                <button
+                  onClick={() => setConfirmando(false)}
+                  className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-700 px-2.5 py-1.5 rounded-lg font-bold"
+                >
+                  No
+                </button>
+              </div>
+            ) : (
               <button
-                onClick={() => { onCancelar(pedido.id); setConfirmando(false) }}
-                className="text-xs text-white bg-red-500 px-3 py-1 rounded-lg font-bold"
+                onClick={() => setConfirmando(true)}
+                className="flex items-center gap-1 text-xs text-red-400 font-semibold px-1"
               >
-                Sí, cancelar
+                <XCircle size={14} /> Cancelar
               </button>
-              <button
-                onClick={() => setConfirmando(false)}
-                className="text-xs text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg font-bold"
-              >
-                No
-              </button>
-            </div>
+            )
           ) : (
             <button
-              onClick={() => setConfirmando(true)}
-              className="flex items-center gap-1 text-xs text-red-400 font-semibold"
+              onClick={() => onRepetir(pedido)}
+              className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300
+                         font-bold bg-gray-100 dark:bg-gray-700 px-3 py-1.5 rounded-lg
+                         active:scale-95 transition-transform"
             >
-              <XCircle size={14} /> Cancelar pedido
+              <RotateCcw size={13} /> Repetir
             </button>
-          )
-        ) : (
-          <button
-            onClick={() => onRepetir(pedido)}
-            className="flex items-center gap-1.5 text-xs text-primary font-bold
-                       bg-primary-light px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
-          >
-            <RotateCcw size={13} /> Repetir compra
-          </button>
-        )}
+          )}
+        </div>
       </div>
     </motion.div>
   )
@@ -116,10 +137,10 @@ function EmptyState({ icono, titulo, texto }) {
   const navigate = useNavigate()
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-4 text-center px-6">
-      <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+      <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
         {icono}
       </div>
-      <h3 className="font-bold text-gray-700 text-lg">{titulo}</h3>
+      <h3 className="font-bold text-gray-700 dark:text-gray-200 text-lg">{titulo}</h3>
       <p className="text-gray-400 text-sm leading-relaxed">{texto}</p>
       <button onClick={() => navigate('/menu/buenos-dias')} className="btn-primary mt-2">
         Ver el menú
@@ -133,13 +154,20 @@ export default function HistoryPage() {
   const { state } = useLocation()
   const { pedidos, cancelarPedido } = useOrderStore()
   const { agregarItem, limpiarCarrito } = useCartStore()
-  const [tabActivo, setTabActivo] = useState('activos')
+  const quitarPuntos = useUserStore((s) => s.quitarPuntos)
+  const [tabActivo,          setTabActivo]          = useState('activos')
+  const [pedidoSeguimiento, setPedidoSeguimiento] = useState(null)
 
   const activos   = pedidos.filter((p) => p.estado === 'pendiente' || p.estado === 'listo')
   const historial = pedidos.filter((p) => p.estado === 'entregado' || p.estado === 'cancelado')
 
   const ordenar = (arr) =>
     [...arr].sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion))
+
+  const handleCancelar = (pedido) => {
+    cancelarPedido(pedido.id)
+    if (pedido.puntosGanados > 0) quitarPuntos(pedido.puntosGanados)
+  }
 
   const handleRepetir = (pedido) => {
     limpiarCarrito()
@@ -151,6 +179,7 @@ export default function HistoryPage() {
   }
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -160,7 +189,7 @@ export default function HistoryPage() {
       <PageHeader title="Mis Pedidos" />
 
       {/* ── Tabs ──────────────────────────────────── */}
-      <div className="flex gap-1 mx-4 mb-3 bg-gray-100 rounded-xl p-1">
+      <div className="flex gap-1 mx-4 mb-3 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
         {[
           { key: 'activos',   label: 'Activos',   count: activos.length   },
           { key: 'historial', label: 'Historial', count: historial.length },
@@ -171,7 +200,7 @@ export default function HistoryPage() {
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg
                         text-sm font-semibold transition-all ${
                           tabActivo === key
-                            ? 'bg-white text-gray-900 shadow-sm'
+                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                             : 'text-gray-500'
                         }`}
           >
@@ -182,7 +211,7 @@ export default function HistoryPage() {
                              rounded-full flex items-center justify-center ${
                                tabActivo === key
                                  ? 'bg-primary text-white'
-                                 : 'bg-gray-200 text-gray-500'
+                                 : 'bg-gray-200 dark:bg-gray-600 text-gray-500'
                              }`}
               >
                 {count}
@@ -195,7 +224,7 @@ export default function HistoryPage() {
       {/* ── Contenido ─────────────────────────────── */}
       <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
 
-        {/* Banner de nuevas insignias (viene de ConfirmPage) */}
+        {/* Banner nuevas insignias */}
         <AnimatePresence>
           {state?.nuevasInsignias?.length > 0 && (
             <motion.div
@@ -211,7 +240,7 @@ export default function HistoryPage() {
                 <div key={ins.id} className="flex items-center gap-2.5">
                   <span className="text-xl select-none">{ins.icono}</span>
                   <div>
-                    <p className="font-bold text-gray-800 text-sm">{ins.nombre}</p>
+                    <p className="font-bold text-gray-800 dark:text-gray-100 text-sm">{ins.nombre}</p>
                     <p className="text-gray-500 text-xs">{ins.descripcion}</p>
                   </div>
                 </div>
@@ -228,8 +257,9 @@ export default function HistoryPage() {
                   key={p.id}
                   pedido={p}
                   esActivo
-                  onCancelar={cancelarPedido}
+                  onCancelar={handleCancelar}
                   onRepetir={handleRepetir}
+                  onSeguimiento={setPedidoSeguimiento}
                 />
               ))}
             </AnimatePresence>
@@ -249,6 +279,7 @@ export default function HistoryPage() {
                 esActivo={false}
                 onCancelar={cancelarPedido}
                 onRepetir={handleRepetir}
+                onSeguimiento={setPedidoSeguimiento}
               />
             ))}
           </AnimatePresence>
@@ -261,5 +292,15 @@ export default function HistoryPage() {
         )}
       </div>
     </motion.div>
+
+      <AnimatePresence>
+        {pedidoSeguimiento && (
+          <SeguimientoSheet
+            pedido={pedidoSeguimiento}
+            onClose={() => setPedidoSeguimiento(null)}
+          />
+        )}
+      </AnimatePresence>
+    </>
   )
 }

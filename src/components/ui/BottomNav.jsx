@@ -3,10 +3,10 @@ import { Home, BookOpen, ClipboardList, User } from 'lucide-react'
 import useOrderStore from '@/stores/useOrderStore'
 
 const TABS = [
-  { to: '/',        label: 'Inicio',      Icon: Home                         },
-  { to: '/menu/buenos-dias', label: 'Menú', Icon: BookOpen                   },
-  { to: '/pedidos', label: 'Mis Pedidos', Icon: ClipboardList, badge: true   },
-  { to: '/perfil',  label: 'Perfil',      Icon: User                         },
+  { to: '/',               label: 'Inicio',      Icon: Home                       },
+  { to: '/menu/buenos-dias', label: 'Menú',      Icon: BookOpen                   },
+  { to: '/pedidos',        label: 'Mis Pedidos', Icon: ClipboardList, badge: true },
+  { to: '/perfil',         label: 'Perfil',      Icon: User                       },
 ]
 
 export default function BottomNav() {
@@ -19,7 +19,8 @@ export default function BottomNav() {
   return (
     <nav
       className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md
-                 bg-white border-t border-gray-100 shadow-bottom pb-safe z-40"
+                 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800
+                 shadow-bottom pb-safe z-40"
     >
       <ul className="flex justify-around items-center h-16">
         {TABS.map(({ to, label, Icon, badge }) => {

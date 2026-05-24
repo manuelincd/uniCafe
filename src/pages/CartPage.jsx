@@ -8,13 +8,30 @@ import { calcularPuntosPedido } from '@/utils/points'
 import { getProducto, getCategoria } from '@/data/menu'
 import PageHeader from '@/components/ui/PageHeader'
 
-const UMBRAL_GRATUIDAD        = 200
-const DESCUENTO_PUNTOS        = 10
-const PUNTOS_MIN_DESCUENTO    = 100
+const DESCUENTO_PUNTOS     = 10
+const PUNTOS_MIN_DESCUENTO = 100
 
-function emojiDeItem(productoId) {
-  const prod = getProducto(productoId)
-  return getCategoria(prod?.categoriaId)?.emoji ?? '🍽️'
+function ItemThumb({ productoId }) {
+  const [imgError, setImgError] = useState(false)
+  const prod     = getProducto(productoId)
+  const emoji    = getCategoria(prod?.categoriaId)?.emoji ?? '🍽️'
+  const showImg  = prod?.imagen && !imgError
+
+  return (
+    <div className="w-16 h-16 rounded-xl bg-primary-light flex items-center
+                    justify-center flex-shrink-0 overflow-hidden">
+      {showImg ? (
+        <img
+          src={prod.imagen}
+          alt={prod.nombre}
+          className="w-full h-full object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-2xl select-none">{emoji}</span>
+      )}
+    </div>
+  )
 }
 
 export default function CartPage() {
@@ -35,10 +52,6 @@ export default function CartPage() {
 
   const { total: puntosAGanar } = calcularPuntosPedido(items, false, false)
 
-  // Banner de progreso hacia $200
-  const faltante = Math.max(0, UMBRAL_GRATUIDAD - subtotal)
-  const progreso  = Math.min(100, Math.round((subtotal / UMBRAL_GRATUIDAD) * 100))
-
   /* ── Estado vacío ─────────────────────────────── */
   if (items.length === 0) {
     return (
@@ -51,20 +64,18 @@ export default function CartPage() {
           <ShoppingCart size={52} className="text-primary" strokeWidth={1.5} />
         </div>
         <div className="text-center space-y-1">
-          <h2 className="text-xl font-bold text-gray-800">Tu carrito está vacío</h2>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+            Tu carrito está vacío
+          </h2>
           <p className="text-gray-400 text-sm">Agrega algo del menú para empezar</p>
         </div>
-        <button
-          onClick={() => navigate('/menu/buenos-dias')}
-          className="btn-primary"
-        >
+        <button onClick={() => navigate('/menu/buenos-dias')} className="btn-primary">
           Ver el menú
         </button>
       </motion.div>
     )
   }
 
-  /* ── Carrito con items ───────────────────────── */
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -72,7 +83,6 @@ export default function CartPage() {
       exit={{ opacity: 0 }}
       className="min-h-screen flex flex-col"
     >
-      {/* Header */}
       <PageHeader
         title="Mi Carrito"
         onBack={() => navigate(-1)}
@@ -80,7 +90,7 @@ export default function CartPage() {
           <button
             onClick={limpiarCarrito}
             className="w-10 h-10 flex items-center justify-center rounded-xl
-                       text-red-400 active:bg-red-50 transition-colors"
+                       text-red-400 active:bg-red-50 dark:active:bg-red-900/20 transition-colors"
             aria-label="Vaciar carrito"
           >
             <Trash2 size={20} />
@@ -88,30 +98,7 @@ export default function CartPage() {
         }
       />
 
-      <div className="flex-1 overflow-y-auto px-4 pb-56 space-y-4">
-
-        {/* ── Banner de progreso ─────────────────── */}
-        {faltante > 0 ? (
-          <div className="bg-accent-light rounded-2xl p-4 space-y-2">
-            <p className="text-accent font-semibold text-sm">
-              ¡Estás a{' '}
-              <span className="font-extrabold">${faltante}</span>
-              {' '}de recolección gratuita!
-            </p>
-            <div className="h-2 bg-white rounded-full overflow-hidden">
-              <div
-                className="h-full bg-accent rounded-full transition-all duration-500"
-                style={{ width: `${progreso}%` }}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="bg-green-50 border border-green-200 rounded-2xl px-4 py-3">
-            <p className="text-green-700 font-semibold text-sm">
-              ✓ ¡Recolección sin costo desbloqueada!
-            </p>
-          </div>
-        )}
+      <div className="flex-1 overflow-y-auto px-4 pb-24 space-y-4">
 
         {/* ── Lista de items ─────────────────────── */}
         <div className="space-y-3">
@@ -124,19 +111,14 @@ export default function CartPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20, height: 0, marginTop: 0, marginBottom: 0 }}
                 transition={{ duration: 0.2 }}
-                className="bg-white rounded-2xl shadow-card p-4"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-4"
               >
                 <div className="flex gap-3">
-                  {/* Miniatura */}
-                  <div className="w-16 h-16 rounded-xl bg-primary-light flex items-center
-                                  justify-center flex-shrink-0">
-                    <span className="text-2xl select-none">{emojiDeItem(item.productoId)}</span>
-                  </div>
+                  <ItemThumb productoId={item.productoId} />
 
                   <div className="flex-1 min-w-0">
-                    {/* Nombre + papelera */}
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-bold text-gray-900 text-sm leading-snug line-clamp-2 flex-1">
+                      <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-2 flex-1">
                         {item.nombre}
                       </h3>
                       <button
@@ -147,24 +129,22 @@ export default function CartPage() {
                       </button>
                     </div>
 
-                    {/* Personalizaciones */}
                     {item.personalizaciones?.length > 0 && (
                       <p className="text-gray-400 text-xs mt-0.5 leading-snug">
                         {item.personalizaciones.map((p) => p.label).join(' · ')}
                       </p>
                     )}
 
-                    {/* Controles cantidad + precio */}
                     <div className="flex items-center justify-between mt-2.5">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => actualizarCantidad(item.uid, item.cantidad - 1)}
-                          className="w-6 h-6 rounded-full border border-gray-200 flex items-center
-                                     justify-center active:bg-gray-100 transition-colors"
+                          className="w-6 h-6 rounded-full border border-gray-200 dark:border-gray-600
+                                     flex items-center justify-center active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
                         >
-                          <Minus size={12} className="text-gray-500" />
+                          <Minus size={12} className="text-gray-500 dark:text-gray-400" />
                         </button>
-                        <span className="font-bold text-sm w-4 text-center tabular-nums">
+                        <span className="font-bold text-sm w-4 text-center tabular-nums dark:text-white">
                           {item.cantidad}
                         </span>
                         <button
@@ -188,9 +168,9 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    {/* Link modificar */}
                     <Link
                       to={`/producto/${item.productoId}`}
+                      state={{ editUid: item.uid }}
                       className="text-xs text-primary font-semibold mt-1 inline-block"
                     >
                       Modificar
@@ -203,8 +183,8 @@ export default function CartPage() {
         </div>
 
         {/* ── Nota para cocina ──────────────────── */}
-        <div className="bg-white rounded-2xl shadow-card p-4">
-          <p className="font-bold text-gray-800 text-sm mb-2">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-4">
+          <p className="font-bold text-gray-800 dark:text-gray-100 text-sm mb-2">
             Nota para la cocina
             <span className="font-normal text-gray-400 ml-1">(opcional)</span>
           </p>
@@ -214,37 +194,37 @@ export default function CartPage() {
             placeholder="Ej: Sin chile a todo, por favor"
             rows={3}
             maxLength={150}
-            className="w-full text-sm text-gray-700 placeholder-gray-300 resize-none
-                       outline-none border border-gray-100 rounded-xl p-3
-                       focus:border-primary transition-colors"
+            className="w-full text-sm text-gray-700 dark:text-gray-200
+                       placeholder-gray-300 dark:placeholder-gray-600
+                       resize-none outline-none
+                       border border-gray-100 dark:border-gray-700
+                       bg-white dark:bg-gray-800
+                       rounded-xl p-3 focus:border-primary transition-colors"
           />
-          <p className="text-right text-[10px] text-gray-300 mt-1">
-            {notaCocina.length}/150
-          </p>
+          <p className="text-right text-[10px] text-gray-300 mt-1">{notaCocina.length}/150</p>
         </div>
 
         {/* ── Resumen del pedido ────────────────── */}
-        <div className="bg-white rounded-2xl shadow-card p-4 space-y-3">
-          <h2 className="font-bold text-gray-900">Resumen</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-4 space-y-3">
+          <h2 className="font-bold text-gray-900 dark:text-white">Resumen</h2>
 
-          <div className="flex justify-between text-sm text-gray-600">
+          <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
             <span>Subtotal</span>
             <span className="font-semibold tabular-nums">${subtotal}</span>
           </div>
 
-          {/* Toggle descuento por puntos */}
           {puedeDescuento && (
             <button
               onClick={() => setAplicarDescuento(!aplicarDescuento)}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl
                           border-2 transition-all
                           ${aplicarDescuento
-                            ? 'border-primary bg-primary-light'
-                            : 'border-gray-100'
+                            ? 'border-primary bg-primary-light dark:bg-primary/20'
+                            : 'border-gray-100 dark:border-gray-700'
                           }`}
             >
               <div className="text-left">
-                <p className={`text-sm font-semibold ${aplicarDescuento ? 'text-primary' : 'text-gray-700'}`}>
+                <p className={`text-sm font-semibold ${aplicarDescuento ? 'text-primary' : 'text-gray-700 dark:text-gray-200'}`}>
                   Descuento por puntos
                 </p>
                 <p className="text-xs text-gray-400">
@@ -254,11 +234,9 @@ export default function CartPage() {
               <div
                 className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
                             transition-colors flex-shrink-0
-                            ${aplicarDescuento ? 'bg-primary border-primary' : 'border-gray-300'}`}
+                            ${aplicarDescuento ? 'bg-primary border-primary' : 'border-gray-300 dark:border-gray-600'}`}
               >
-                {aplicarDescuento && (
-                  <Check size={11} className="text-white" strokeWidth={3} />
-                )}
+                {aplicarDescuento && <Check size={11} className="text-white" strokeWidth={3} />}
               </div>
             </button>
           )}
@@ -270,13 +248,11 @@ export default function CartPage() {
             </div>
           )}
 
-          {/* Total */}
-          <div className="border-t border-gray-100 pt-3 flex justify-between">
-            <span className="font-extrabold text-gray-900">Total</span>
+          <div className="border-t border-gray-100 dark:border-gray-700 pt-3 flex justify-between">
+            <span className="font-extrabold text-gray-900 dark:text-white">Total</span>
             <span className="font-extrabold text-primary text-lg tabular-nums">${total}</span>
           </div>
 
-          {/* Chip puntos a ganar */}
           <div className="flex items-center gap-2 bg-accent-light rounded-xl px-3 py-2.5">
             <span className="text-lg select-none">⭐</span>
             <p className="text-accent font-bold text-sm">
@@ -284,13 +260,8 @@ export default function CartPage() {
             </p>
           </div>
         </div>
-      </div>
 
-      {/* ── Botón sticky ─────────────────────────── */}
-      <div
-        className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md
-                   bg-white border-t border-gray-100 px-4 py-4 pb-safe shadow-bottom"
-      >
+        {/* ── Botón continuar ──────────────────────── */}
         <button
           onClick={() => navigate('/horario')}
           className="w-full flex items-center justify-between px-5 py-4 rounded-xl

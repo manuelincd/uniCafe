@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 
-import useUserStore from '@/stores/useUserStore'
+import useUserStore    from '@/stores/useUserStore'
+import useSettingsStore from '@/stores/useSettingsStore'
 
 // ── Páginas principales ───────────────────────────────────────
 import HomePage    from '@/pages/HomePage'
@@ -23,16 +24,25 @@ import OnboardingModal from '@/components/OnboardingModal'
 
 export default function App() {
   const { nombre } = useUserStore()
+  const { modoOscuro, tamanoTexto } = useSettingsStore()
   const [mostrarOnboarding, setMostrarOnboarding] = useState(!nombre)
 
   useEffect(() => {
     if (!nombre) setMostrarOnboarding(true)
   }, [nombre])
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', modoOscuro)
+  }, [modoOscuro])
+
+  useEffect(() => {
+    const sizes = { normal: '100%', grande: '112%', extragrande: '125%' }
+    document.documentElement.style.fontSize = sizes[tamanoTexto] ?? '100%'
+  }, [tamanoTexto])
+
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-background flex flex-col max-w-md mx-auto relative">
-
+      <div className="min-h-screen bg-background dark:bg-gray-900 flex flex-col max-w-md mx-auto relative">
         {/* Modal de primer acceso */}
         <AnimatePresence>
           {mostrarOnboarding && (
@@ -40,24 +50,19 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* Contenido principal — pb-16 para que no quede bajo el BottomNav */}
-        <main className="flex-1 pb-16">
+        {/* Contenido principal */}
+        <main className="flex-1 pb-16 overflow-hidden">
           <AnimatePresence mode="wait">
             <Routes>
-              {/* Rutas principales */}
               <Route path="/"                element={<HomePage />}    />
               <Route path="/menu/:categoria" element={<MenuPage />}    />
               <Route path="/producto/:id"    element={<ProductPage />} />
               <Route path="/carrito"         element={<CartPage />}    />
-
-              {/* Flujo de pedido */}
-              <Route path="/horario"   element={<SchedulePage />} />
-              <Route path="/confirmar" element={<ConfirmPage />}  />
-              <Route path="/pedidos"   element={<HistoryPage />}  />
-              <Route path="/perfil"    element={<ProfilePage />}  />
-
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="/horario"         element={<SchedulePage />} />
+              <Route path="/confirmar"       element={<ConfirmPage />}  />
+              <Route path="/pedidos"         element={<HistoryPage />}  />
+              <Route path="/perfil"          element={<ProfilePage />}  />
+              <Route path="*"               element={<Navigate to="/" replace />} />
             </Routes>
           </AnimatePresence>
         </main>
@@ -66,7 +71,7 @@ export default function App() {
         {!mostrarOnboarding && (
           <>
             <BottomNav />
-            <CartFAB />  {/* Se auto-oculta en /carrito y cuando el carrito está vacío */}
+            <CartFAB />
           </>
         )}
       </div>
