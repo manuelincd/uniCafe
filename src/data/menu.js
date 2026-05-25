@@ -313,7 +313,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan de caja tostado con lomo, lechuga, jitomate y mayonesa',
     precio: 45,
     disponibilidad: 'disponible',
-    imagen: '/images/menu/torta.jpg',
+    imagen: '/images/menu/sandwich.jpg',
     personalizaciones: [
       P.sinCebolla, P.sinChile, P.extraQueso, P.sinSalsa, P.conCrema
     ]
@@ -325,7 +325,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan de caja tostado con pollo, lechuga, jitomate y mayonesa',
     precio: 45,
     disponibilidad: 'disponible',
-    imagen: '/images/menu/torta.jpg',
+    imagen: '/images/menu/sandwich.jpg',
     personalizaciones: [
       P.sinCebolla, P.extraQueso, P.sinSalsa, P.conCrema, P.extraProteina
     ]
@@ -337,7 +337,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan de caja tostado con queso panela, lechuga y jitomate',
     precio: 45,
     disponibilidad: 'disponible',
-    imagen: '/images/menu/torta.jpg',
+    imagen: '/images/menu/sandwich.jpg',
     personalizaciones: [
       P.sinCebolla, P.extraQueso, P.sinSalsa, P.sinChile
     ]
@@ -349,7 +349,7 @@ export const PRODUCTOS = [
     descripcion: 'Pan de caja tostado con jamón, queso, lechuga y jitomate',
     precio: 45,
     disponibilidad: 'disponible',
-    imagen: '/images/menu/torta.jpg',
+    imagen: '/images/menu/sandwich.jpg',
     personalizaciones: [
       P.sinJamon, P.extraQueso, P.sinSalsa, P.sinCebolla, P.conCrema
     ]
