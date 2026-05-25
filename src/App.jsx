@@ -21,6 +21,7 @@ import ProfilePage  from '@/pages/ProfilePage'
 import BottomNav       from '@/components/ui/BottomNav'
 import CartFAB         from '@/components/ui/CartFAB'
 import OnboardingModal from '@/components/OnboardingModal'
+import ScrollToTop     from '@/components/ScrollToTop'
 
 export default function App() {
   const { nombre } = useUserStore()
@@ -42,6 +43,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <div className="min-h-screen bg-background dark:bg-gray-900 flex flex-col max-w-md mx-auto relative">
         {/* Modal de primer acceso */}
         <AnimatePresence>
