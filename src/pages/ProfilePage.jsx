@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Settings, Edit2, Check, X } from 'lucide-react'
+import { Settings, Edit2, Check, X, Heart, ShoppingCart } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
 import useOrderStore from '@/stores/useOrderStore'
+import useCartStore from '@/stores/useCartStore'
 import { calcularNivel, TODAS_LAS_INSIGNIAS } from '@/utils/points'
+import { getProducto, getCategoria } from '@/data/menu'
 import Badge from '@/components/ui/Badge'
 import PageHeader from '@/components/ui/PageHeader'
 import SettingsSheet from '@/components/SettingsSheet'
@@ -23,14 +26,21 @@ const TIMELINE = [
 ]
 
 export default function ProfilePage() {
+  const navigate = useNavigate()
   const store = useUserStore()
   const {
     nombre, puntos, rachaActual,
     totalPedidos, pedidosAnticipados, insignias,
+    favoritos, toggleFavorito,
     setNombre
   } = store
 
-  const pedidos = useOrderStore((s) => s.pedidos)
+  const pedidos     = useOrderStore((s) => s.pedidos)
+  const agregarItem = useCartStore((s) => s.agregarItem)
+
+  const productosGuardados = favoritos
+    .map((id) => getProducto(id))
+    .filter(Boolean)
 
   const [editando,      setEditando]      = useState(false)
   const [nombreTemp,    setNombreTemp]    = useState(nombre)
@@ -173,6 +183,85 @@ export default function ProfilePage() {
               </p>
             )}
           </div>
+
+          {/* ── Favoritos ─────────────────────────── */}
+          <section>
+            <h2 className="font-bold text-gray-900 dark:text-white text-lg mb-3 flex items-center gap-2">
+              <Heart size={18} className="fill-red-500 text-red-500" />
+              Mis favoritos
+            </h2>
+
+            {productosGuardados.length === 0 ? (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-6 flex flex-col items-center gap-2 text-center">
+                <Heart size={32} className="text-gray-200 dark:text-gray-600" />
+                <p className="text-gray-400 text-sm">
+                  Aún no tienes favoritos. Toca el{' '}
+                  <Heart size={12} className="inline text-gray-400" />{' '}
+                  en cualquier producto para guardarlo aquí.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {productosGuardados.map((producto) => {
+                  const categoria = getCategoria(producto.categoriaId)
+                  const agotado   = producto.disponibilidad === 'agotado'
+                  return (
+                    <div
+                      key={producto.id}
+                      className="bg-white dark:bg-gray-800 rounded-2xl shadow-card
+                                 flex items-center gap-3 p-3 overflow-hidden"
+                    >
+                      <button
+                        onClick={() => navigate(`/producto/${producto.id}`)}
+                        className="w-14 h-14 rounded-xl overflow-hidden bg-primary-light
+                                   flex items-center justify-center flex-shrink-0 active:scale-95 transition-transform"
+                      >
+                        {producto.imagen ? (
+                          <img
+                            src={producto.imagen}
+                            alt={producto.nombre}
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.currentTarget.style.display = 'none' }}
+                          />
+                        ) : (
+                          <span className="text-2xl select-none">{categoria?.emoji ?? '🍽️'}</span>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => navigate(`/producto/${producto.id}`)}
+                        className="flex-1 min-w-0 text-left"
+                      >
+                        <p className="font-bold text-gray-900 dark:text-white text-sm line-clamp-1">
+                          {producto.nombre}
+                        </p>
+                        <p className="text-primary font-extrabold text-sm">${producto.precio}</p>
+                      </button>
+
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => toggleFavorito(producto.id)}
+                          className="w-8 h-8 flex items-center justify-center rounded-full
+                                     active:scale-90 transition-transform"
+                        >
+                          <Heart size={16} className="fill-red-500 text-red-500" />
+                        </button>
+                        <button
+                          onClick={() => !agotado && agregarItem(producto)}
+                          disabled={agotado}
+                          className="w-9 h-9 bg-accent rounded-full flex items-center justify-center
+                                     active:scale-90 transition-transform shadow-md
+                                     disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          <ShoppingCart size={15} className="text-white" />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </section>
 
           {/* ── Insignias ──────────────────────────── */}
           <section>

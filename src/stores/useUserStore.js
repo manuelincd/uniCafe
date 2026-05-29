@@ -22,6 +22,9 @@ const useUserStore = create(
       rachaActual:      0,
       ultimoPedidoFecha: null,
 
+      // Favoritos
+      favoritos: [],
+
       // Analítica local
       categoriasVistas:   [],
       totalPedidos:       0,
@@ -30,6 +33,15 @@ const useUserStore = create(
       // ── Acciones ────────────────────────────────────
       setNombre: (nombre) => set({ nombre }),
       setEmail:  (email)  => set({ email }),
+
+      toggleFavorito: (productoId) => {
+        const { favoritos } = get()
+        set({
+          favoritos: favoritos.includes(productoId)
+            ? favoritos.filter((id) => id !== productoId)
+            : [...favoritos, productoId],
+        })
+      },
 
       agregarPuntos: (cantidad) => {
         const nuevos = get().puntos + cantidad
@@ -94,6 +106,7 @@ const useUserStore = create(
         set({
           nombre: '', email: '', puntos: 0, nivel: 0, insignias: [],
           rachaActual: 0, ultimoPedidoFecha: null,
+          favoritos: [],
           categoriasVistas: [], totalPedidos: 0, pedidosAnticipados: 0,
         }),
     }),

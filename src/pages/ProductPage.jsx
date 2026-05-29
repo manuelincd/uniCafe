@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Minus, Plus, Check, ChevronLeft } from 'lucide-react'
 import useCartStore from '@/stores/useCartStore'
+import useUserStore from '@/stores/useUserStore'
 import { getProducto, getCategoria } from '@/data/menu'
 
 const DISP_CONFIG = {
@@ -22,6 +23,9 @@ export default function ProductPage() {
   const itemEnCarrito = useCartStore((s) =>
     editUid ? s.items.find((i) => i.uid === editUid) : null
   )
+
+  const favoritos      = useUserStore((s) => s.favoritos)
+  const toggleFavorito = useUserStore((s) => s.toggleFavorito)
 
   const producto  = getProducto(id)
   const categoria = producto ? getCategoria(producto.categoriaId) : null
@@ -43,7 +47,7 @@ export default function ProductPage() {
       })
     )
   })
-  const [favorito, setFavorito] = useState(false)
+  const favorito = producto ? favoritos.includes(producto.id) : false
   const [agregado, setAgregado] = useState(false)
   const [imgError, setImgError] = useState(false)
 
@@ -104,7 +108,7 @@ export default function ProductPage() {
           <ChevronLeft size={22} className="text-gray-700 dark:text-gray-300" />
         </button>
         <button
-          onClick={() => setFavorito(!favorito)}
+          onClick={() => toggleFavorito(producto.id)}
           className="w-10 h-10 flex items-center justify-center rounded-xl
                      bg-white/80 dark:bg-gray-800/80 backdrop-blur
                      active:bg-gray-100 dark:active:bg-gray-700 transition-colors shadow"
