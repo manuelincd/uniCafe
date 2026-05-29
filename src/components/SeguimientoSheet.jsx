@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, useDragControls } from 'framer-motion'
 import { X, CheckCircle2, ChefHat, Package, XCircle, AlertTriangle } from 'lucide-react'
 import useOrderStore from '@/stores/useOrderStore'
 import { nivelCargaSlot } from '@/utils/schedule'
@@ -94,10 +94,11 @@ function StepperCancelado() {
 
 // ── Componente principal ───────────────────────────────────────
 export default function SeguimientoSheet({ pedido, onClose }) {
-  const reservados = useOrderStore((s) => s.getReservadosEnSlot(pedido.slot))
-  const carga      = nivelCargaSlot(reservados)
-  const cancelado  = pedido.estado === 'cancelado'
-  const activo     = pasoActivo(pedido.estado)
+  const reservados    = useOrderStore((s) => s.getReservadosEnSlot(pedido.slot))
+  const carga         = nivelCargaSlot(reservados)
+  const cancelado     = pedido.estado === 'cancelado'
+  const activo        = pasoActivo(pedido.estado)
+  const dragControls  = useDragControls()
 
   const fecha   = new Date(pedido.fechaCreacion)
   const esHoy   = fecha.toDateString() === new Date().toDateString()
@@ -118,6 +119,14 @@ export default function SeguimientoSheet({ pedido, onClose }) {
 
       {/* Sheet */}
       <motion.div
+        drag="y"
+        dragControls={dragControls}
+        dragListener={false}
+        dragConstraints={{ top: 0 }}
+        dragElastic={{ top: 0, bottom: 0.4 }}
+        onDragEnd={(_, { offset, velocity }) => {
+          if (offset.y > 80 || velocity.y > 500) onClose()
+        }}
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
@@ -126,8 +135,12 @@ export default function SeguimientoSheet({ pedido, onClose }) {
                    bg-white dark:bg-gray-900 rounded-t-3xl z-50
                    max-h-[88vh] flex flex-col"
       >
-        {/* Handle */}
-        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+        {/* Handle — área de arrastre */}
+        <div
+          className="flex justify-center pt-3 pb-1 flex-shrink-0 cursor-grab active:cursor-grabbing"
+          style={{ touchAction: 'none' }}
+          onPointerDown={(e) => dragControls.start(e)}
+        >
           <div className="w-10 h-1 bg-gray-200 dark:bg-gray-700 rounded-full" />
         </div>
 

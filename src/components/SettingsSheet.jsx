@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, useDragControls } from 'framer-motion'
 import { Moon, Sun, Type, X } from 'lucide-react'
 import useSettingsStore from '@/stores/useSettingsStore'
 
@@ -10,6 +10,7 @@ const TAMANOS = [
 
 export default function SettingsSheet({ onClose }) {
   const { modoOscuro, tamanoTexto, setModoOscuro, setTamanoTexto } = useSettingsStore()
+  const dragControls = useDragControls()
 
   return (
     <motion.div
@@ -20,6 +21,14 @@ export default function SettingsSheet({ onClose }) {
       onClick={onClose}
     >
       <motion.div
+        drag="y"
+        dragControls={dragControls}
+        dragListener={false}
+        dragConstraints={{ top: 0 }}
+        dragElastic={{ top: 0, bottom: 0.4 }}
+        onDragEnd={(_, { offset, velocity }) => {
+          if (offset.y > 80 || velocity.y > 500) onClose()
+        }}
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
@@ -27,8 +36,14 @@ export default function SettingsSheet({ onClose }) {
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-md bg-white dark:bg-gray-900 rounded-t-3xl px-6 pt-5 pb-10"
       >
-        {/* Handle */}
-        <div className="w-10 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-5" />
+        {/* Handle — área de arrastre */}
+        <div
+          className="cursor-grab active:cursor-grabbing mb-5"
+          style={{ touchAction: 'none' }}
+          onPointerDown={(e) => dragControls.start(e)}
+        >
+          <div className="w-10 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto" />
+        </div>
 
         {/* Encabezado */}
         <div className="flex items-center justify-between mb-6">
