@@ -6,6 +6,7 @@ const useCartStore = create(
     (set, get) => ({
       items: [],
       notaCocina: '',
+      aplicarDescuentoNivel: false,
 
       // Agrega un producto; si ya existe con las mismas personalizaciones, incrementa cantidad
       agregarItem: (producto, personalizaciones = [], cantidad = 1) => {
@@ -77,7 +78,9 @@ const useCartStore = create(
 
       setNotaCocina: (nota) => set({ notaCocina: nota }),
 
-      limpiarCarrito: () => set({ items: [], notaCocina: '' }),
+      setAplicarDescuentoNivel: (valor) => set({ aplicarDescuentoNivel: valor }),
+
+      limpiarCarrito: () => set({ items: [], notaCocina: '', aplicarDescuentoNivel: false }),
 
       // Selectores derivados
       totalItems: () => get().items.reduce((acc, i) => acc + i.cantidad, 0),

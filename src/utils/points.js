@@ -1,3 +1,18 @@
+// ── Semana ISO (lunes como inicio) ────────────────────────────
+export function semanaActual() {
+  const d = new Date()
+  const day = (d.getDay() + 6) % 7  // 0=lun, 6=dom
+  const lunes = new Date(d)
+  lunes.setDate(d.getDate() - day)
+  return lunes.toISOString().slice(0, 10) // "YYYY-MM-DD" del lunes
+}
+
+export function porcentajeDescuentoNivel(nivel) {
+  if (nivel >= 2) return 20
+  if (nivel >= 1) return 10
+  return 0
+}
+
 // ── Sistema de puntos ──────────────────────────────────────────
 const PUNTOS_BASE_PEDIDO = 10   // fijos por completar cualquier pedido
 const PUNTOS_POR_PESO    = 1    // pts adicionales por cada $10 gastados

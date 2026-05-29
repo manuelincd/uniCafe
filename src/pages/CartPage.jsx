@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingCart, Trash2, Plus, Minus, Check } from 'lucide-react'
 import useCartStore from '@/stores/useCartStore'
 import useUserStore from '@/stores/useUserStore'
-import { calcularPuntosPedido } from '@/utils/points'
+import { calcularPuntosPedido, semanaActual, porcentajeDescuentoNivel } from '@/utils/points'
 import { getProducto, getCategoria } from '@/data/menu'
 import PageHeader from '@/components/ui/PageHeader'
 
@@ -39,16 +39,24 @@ export default function CartPage() {
   const {
     items, notaCocina,
     quitarItem, actualizarCantidad,
-    setNotaCocina, limpiarCarrito
+    setNotaCocina, limpiarCarrito,
+    aplicarDescuentoNivel, setAplicarDescuentoNivel,
   } = useCartStore()
   const subtotal = useCartStore((s) => s.totalPrecio())
-  const { puntos } = useUserStore()
+  const { puntos, nivel, ultimoDescuentoNivel } = useUserStore()
 
   const [aplicarDescuento, setAplicarDescuento] = useState(false)
 
   const puedeDescuento = puntos >= PUNTOS_MIN_DESCUENTO
   const descuento      = aplicarDescuento && puedeDescuento ? DESCUENTO_PUNTOS : 0
-  const total          = Math.max(0, subtotal - descuento)
+
+  const porcNivel              = porcentajeDescuentoNivel(nivel)
+  const descuentoNivelDisponible = porcNivel > 0 && ultimoDescuentoNivel !== semanaActual()
+  const montoDescuentoNivel    = aplicarDescuentoNivel && descuentoNivelDisponible
+    ? Math.floor(subtotal * porcNivel / 100)
+    : 0
+
+  const total = Math.max(0, subtotal - descuento - montoDescuentoNivel)
 
   const { total: puntosAGanar } = calcularPuntosPedido(items, false, false)
 
@@ -241,10 +249,45 @@ export default function CartPage() {
             </button>
           )}
 
+          {descuentoNivelDisponible && (
+            <button
+              onClick={() => setAplicarDescuentoNivel(!aplicarDescuentoNivel)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl
+                          border-2 transition-all
+                          ${aplicarDescuentoNivel
+                            ? 'border-primary bg-primary-light dark:bg-primary/20'
+                            : 'border-gray-100 dark:border-gray-700'
+                          }`}
+            >
+              <div className="text-left">
+                <p className={`text-sm font-semibold ${aplicarDescuentoNivel ? 'text-primary' : 'text-gray-700 dark:text-gray-200'}`}>
+                  {nivel >= 2 ? '👑 Descuento Cafetero VIP' : '🌟 Descuento Habitual'}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {porcNivel}% de descuento — disponible una vez esta semana
+                </p>
+              </div>
+              <div
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
+                            transition-colors flex-shrink-0
+                            ${aplicarDescuentoNivel ? 'bg-primary border-primary' : 'border-gray-300 dark:border-gray-600'}`}
+              >
+                {aplicarDescuentoNivel && <Check size={11} className="text-white" strokeWidth={3} />}
+              </div>
+            </button>
+          )}
+
           {descuento > 0 && (
             <div className="flex justify-between text-sm text-primary">
-              <span>Descuento aplicado</span>
+              <span>Descuento por puntos</span>
               <span className="font-bold tabular-nums">-${descuento}</span>
+            </div>
+          )}
+
+          {montoDescuentoNivel > 0 && (
+            <div className="flex justify-between text-sm text-primary">
+              <span>Descuento {porcNivel}% por nivel</span>
+              <span className="font-bold tabular-nums">-${montoDescuentoNivel}</span>
             </div>
           )}
 

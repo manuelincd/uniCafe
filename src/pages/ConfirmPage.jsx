@@ -5,7 +5,7 @@ import { ChefHat, Clock, Zap, Star, CheckCircle2 } from 'lucide-react'
 import useCartStore from '@/stores/useCartStore'
 import useOrderStore from '@/stores/useOrderStore'
 import useUserStore from '@/stores/useUserStore'
-import { calcularPuntosPedido, verificarInsignias } from '@/utils/points'
+import { calcularPuntosPedido, verificarInsignias, porcentajeDescuentoNivel } from '@/utils/points'
 import PageHeader from '@/components/ui/PageHeader'
 
 export default function ConfirmPage() {
@@ -14,11 +14,17 @@ export default function ConfirmPage() {
   const slot       = state?.slot
   const [exito, setExito] = useState(null) // { pedidoId, puntosTotal, nuevasInsignias }
 
-  const { items, notaCocina, limpiarCarrito } = useCartStore()
+  const { items, notaCocina, limpiarCarrito, aplicarDescuentoNivel } = useCartStore()
   const subtotal    = useCartStore((s) => s.totalPrecio())
   const crearPedido = useOrderStore((s) => s.crearPedido)
   const userStore   = useUserStore()
-  const { nombre, agregarPuntos, registrarPedido, agregarInsignia } = userStore
+  const { nombre, nivel, agregarPuntos, registrarPedido, agregarInsignia, usarDescuentoNivel } = userStore
+
+  const porcNivel         = porcentajeDescuentoNivel(nivel)
+  const montoDescuentoNivel = aplicarDescuentoNivel
+    ? Math.floor(subtotal * porcNivel / 100)
+    : 0
+  const total = subtotal - montoDescuentoNivel
 
   const esPrimerPedidoDia =
     !userStore.ultimoPedidoFecha ||
@@ -49,13 +55,14 @@ export default function ConfirmPage() {
       notaCocina,
       slot:          slot.hora,
       puntosGanados: puntosTotal,
-      total:         subtotal,
+      total,
       nombreUsuario: nombre,
     })
 
     agregarPuntos(puntosTotal)
     registrarPedido({ esAnticipado: slot.esAnticipado })
     nuevasInsignias.forEach((ins) => agregarInsignia(ins))
+    if (montoDescuentoNivel > 0) usarDescuentoNivel()
 
     setExito({ pedidoId, puntosTotal, nuevasInsignias })
     setTimeout(() => {
@@ -193,11 +200,21 @@ export default function ConfirmPage() {
             <span className="font-semibold tabular-nums">${subtotal}</span>
           </div>
 
+          {montoDescuentoNivel > 0 && (
+            <div className="flex justify-between text-sm text-primary">
+              <span>
+                {nivel >= 2 ? '👑 Descuento Cafetero VIP' : '🌟 Descuento Habitual'}{' '}
+                ({porcNivel}%)
+              </span>
+              <span className="font-bold tabular-nums">-${montoDescuentoNivel}</span>
+            </div>
+          )}
+
           <div className="border-t border-gray-100 dark:border-gray-700 pt-2 flex justify-between">
             <span className="font-extrabold text-gray-900 dark:text-white text-base">
               Total a pagar
             </span>
-            <span className="font-extrabold text-primary text-xl tabular-nums">${subtotal}</span>
+            <span className="font-extrabold text-primary text-xl tabular-nums">${total}</span>
           </div>
 
           <div className="bg-accent-light rounded-xl px-4 py-3 space-y-1.5">

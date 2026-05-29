@@ -186,10 +186,17 @@ export default function ProfilePage() {
 
           {/* ── Favoritos ─────────────────────────── */}
           <section>
-            <h2 className="font-bold text-gray-900 dark:text-white text-lg mb-3 flex items-center gap-2">
-              <Heart size={18} className="fill-red-500 text-red-500" />
-              Mis favoritos
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-bold text-gray-900 dark:text-white text-lg flex items-center gap-2">
+                <Heart size={18} className="fill-red-500 text-red-500" />
+                Mis favoritos
+              </h2>
+              {productosGuardados.length > 0 && (
+                <span className="text-xs font-semibold text-gray-400">
+                  {productosGuardados.length} guardado{productosGuardados.length !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
 
             {productosGuardados.length === 0 ? (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-6 flex flex-col items-center gap-2 text-center">
@@ -202,7 +209,7 @@ export default function ProfilePage() {
               </div>
             ) : (
               <div className="space-y-2">
-                {productosGuardados.map((producto) => {
+                {productosGuardados.slice(0, 3).map((producto) => {
                   const categoria = getCategoria(producto.categoriaId)
                   const agotado   = producto.disponibilidad === 'agotado'
                   return (
@@ -259,6 +266,19 @@ export default function ProfilePage() {
                     </div>
                   )
                 })}
+
+                {productosGuardados.length > 3 && (
+                  <button
+                    onClick={() => navigate('/favoritos')}
+                    className="w-full py-3 rounded-2xl border-2 border-dashed border-gray-200
+                               dark:border-gray-700 flex items-center justify-center gap-2
+                               text-gray-500 dark:text-gray-400 text-sm font-semibold
+                               active:bg-gray-50 dark:active:bg-gray-700/50 transition-colors"
+                  >
+                    <Heart size={15} className="text-gray-400" />
+                    Ver todos ({productosGuardados.length})
+                  </button>
+                )}
               </div>
             )}
           </section>

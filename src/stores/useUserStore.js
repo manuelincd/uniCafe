@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { semanaActual } from '@/utils/points'
 
 // Debe mantenerse sincronizado con NIVELES en utils/points.js
 const NIVELES = [
@@ -25,6 +26,9 @@ const useUserStore = create(
       // Favoritos
       favoritos: [],
 
+      // Descuento semanal por nivel (guarda el lunes de la semana en que se usó)
+      ultimoDescuentoNivel: null,
+
       // Analítica local
       categoriasVistas:   [],
       totalPedidos:       0,
@@ -33,6 +37,8 @@ const useUserStore = create(
       // ── Acciones ────────────────────────────────────
       setNombre: (nombre) => set({ nombre }),
       setEmail:  (email)  => set({ email }),
+
+      usarDescuentoNivel: () => set({ ultimoDescuentoNivel: semanaActual() }),
 
       toggleFavorito: (productoId) => {
         const { favoritos } = get()
@@ -107,6 +113,7 @@ const useUserStore = create(
           nombre: '', email: '', puntos: 0, nivel: 0, insignias: [],
           rachaActual: 0, ultimoPedidoFecha: null,
           favoritos: [],
+          ultimoDescuentoNivel: null,
           categoriasVistas: [], totalPedidos: 0, pedidosAnticipados: 0,
         }),
     }),

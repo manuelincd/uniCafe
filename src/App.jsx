@@ -14,8 +14,9 @@ import CartPage    from '@/pages/CartPage'
 // ── Flujo de pedido ───────────────────────────────────────────
 import SchedulePage from '@/pages/SchedulePage'
 import ConfirmPage  from '@/pages/ConfirmPage'
-import HistoryPage  from '@/pages/HistoryPage'
-import ProfilePage  from '@/pages/ProfilePage'
+import HistoryPage    from '@/pages/HistoryPage'
+import ProfilePage    from '@/pages/ProfilePage'
+import FavoritosPage  from '@/pages/FavoritosPage'
 
 // ── Componentes globales ──────────────────────────────────────
 import BottomNav       from '@/components/ui/BottomNav'
@@ -63,7 +64,8 @@ export default function App() {
               <Route path="/horario"         element={<SchedulePage />} />
               <Route path="/confirmar"       element={<ConfirmPage />}  />
               <Route path="/pedidos"         element={<HistoryPage />}  />
-              <Route path="/perfil"          element={<ProfilePage />}  />
+              <Route path="/perfil"          element={<ProfilePage />}   />
+              <Route path="/favoritos"      element={<FavoritosPage />} />
               <Route path="*"               element={<Navigate to="/" replace />} />
             </Routes>
           </AnimatePresence>
