@@ -113,12 +113,25 @@ export function calcularNivel(puntos) {
  */
 export function verificarInsignias(userState, nuevoPedido) {
   const {
-    insignias         = [],
-    totalPedidos      = 0,
-    rachaActual       = 0,
-    categoriasVistas  = [],
-    puntos            = 0,
+    insignias          = [],
+    totalPedidos       = 0,
+    rachaActual        = 0,
+    ultimoPedidoFecha  = null,
+    categoriasVistas   = [],
+    puntos             = 0,
   } = userState
+
+  // Calcula la racha real que quedará después de registrar este pedido
+  // (misma lógica que registrarPedido en useUserStore)
+  const hoy  = new Date().toDateString()
+  const ayer = new Date()
+  ayer.setDate(ayer.getDate() - 1)
+  const nuevaRacha =
+    ultimoPedidoFecha === ayer.toDateString()
+      ? rachaActual + 1
+      : ultimoPedidoFecha === hoy
+      ? rachaActual
+      : 1
 
   const yaDesbloqueada = (id) => insignias.some((i) => i.id === id)
   const nuevas = []
@@ -130,15 +143,15 @@ export function verificarInsignias(userState, nuevoPedido) {
     }
   }
 
-  if (totalPedidos === 0)                  otorgar('primer-pedido')
-  if (nuevoPedido?.esAnticipado)           otorgar('primer-anticipado')
-  if (totalPedidos + 1 >= 10)             otorgar('fiel-cafetero')
-  if (rachaActual + 1 >= 3)               otorgar('racha-3')
-  if (rachaActual + 1 >= 7)               otorgar('racha-7')
-  if (categoriasVistas.length >= 5)       otorgar('gourmet')
-  if (categoriasVistas.length >= 7)       otorgar('explorador')
-  if (puntos >= 100)                       otorgar('cien-puntos')
-  if (puntos >= 2000)                      otorgar('cliente-vip')
+  if (totalPedidos === 0)            otorgar('primer-pedido')
+  if (nuevoPedido?.esAnticipado)     otorgar('primer-anticipado')
+  if (totalPedidos + 1 >= 10)       otorgar('fiel-cafetero')
+  if (nuevaRacha >= 3)               otorgar('racha-3')
+  if (nuevaRacha >= 7)               otorgar('racha-7')
+  if (categoriasVistas.length >= 5)  otorgar('gourmet')
+  if (categoriasVistas.length >= 7)  otorgar('explorador')
+  if (puntos >= 100)                 otorgar('cien-puntos')
+  if (puntos >= 2000)                otorgar('cliente-vip')
 
   const hora = nuevoPedido?.slot ? parseInt(nuevoPedido.slot.split(':')[0], 10) : null
   if (hora !== null && hora < 8)           otorgar('madrugador')
